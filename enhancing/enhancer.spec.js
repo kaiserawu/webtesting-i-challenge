@@ -6,8 +6,14 @@ describe('The enhancer functions', () => {
   const repaired = enhancer.repair(item);
 
   const succeeded = enhancer.succeed(item);
-  const maxed = { ...item, enhancement: 20 };
-  const succeededMaxed = enhancer.succeed(maxed);
+  const succeededMaxed = enhancer.succeed({ ...item, enhancement: 20 });
+
+  const failedLow = enhancer.fail(item);
+  const midEnhanced = { ...item, enhancement: 16 };
+  const failedMid = enhancer.fail(midEnhanced);
+  const highEnhanced = { ...item, enhancement: 17 };
+  const failedHigh = enhancer.fail(highEnhanced);
+
 
   
   it('should repair an item to 100 durability', () => {
@@ -40,6 +46,34 @@ describe('The enhancer functions', () => {
     expect(Object.keys(succeededMaxed)).toContain('durability');
     expect(succeededMaxed.durability).toEqual(item.durability);
     expect(Object.keys(succeededMaxed)).toContain('enhancement');
+  })
+
+  it('should change correct values when enhancement fails based on enhancement level', () => {
+    expect(failedLow.durability).toEqual(item.durability - 5);
+    expect(failedMid.durability).toEqual(midEnhanced.durability - 10);
+    expect(failedHigh.durability).toEqual(highEnhanced.durability - 10);
+    expect(failedHigh.enhancement).toEqual(highEnhanced.enhancement - 1);
+  })
+
+  it('should not do anything else wonky when failed to enhance', () => {
+    expect(typeof failedLow).toBe('object');
+    expect(Object.keys(failedLow)).toContain('name');
+    expect(failedLow.name).toEqual(item.name);
+    expect(Object.keys(failedLow)).toContain('durability');
+    expect(Object.keys(failedLow)).toContain('enhancement');
+    expect(failedLow.enhancement).toEqual(item.enhancement);
+    expect(typeof failedMid).toBe('object');
+    expect(Object.keys(failedMid)).toContain('name');
+    expect(failedMid.name).toEqual(midEnhanced.name);
+    expect(Object.keys(failedMid)).toContain('durability');
+    expect(Object.keys(failedMid)).toContain('enhancement');
+    expect(failedMid.enhancement).toEqual(midEnhanced.enhancement);
+    expect(typeof failedHigh).toBe('object');
+    expect(Object.keys(failedHigh)).toContain('name');
+    expect(failedHigh.name).toEqual(highEnhanced.name);
+    expect(Object.keys(failedHigh)).toContain('durability');
+    expect(Object.keys(failedHigh)).toContain('enhancement');
+    expect(failedHigh.enhancement).toEqual(highEnhanced.enhancement - 1);
   })
   
 })
